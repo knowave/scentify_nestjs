@@ -1,6 +1,7 @@
 import { Logger, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { IS_LOCAL_ENV } from 'src/common/constants/constant';
 import { DataSource } from 'typeorm';
 
 @Module({
@@ -17,7 +18,7 @@ import { DataSource } from 'typeorm';
         database: configService.get('DB_NAME'),
         entities: [__dirname + '../../domains/**/entities/**.entity{.ts,.js}'],
         migrations: [__dirname + '/migrations/*.ts'],
-        synchronize: true,
+        synchronize: IS_LOCAL_ENV,
         migrationsRun: true,
       }),
 
