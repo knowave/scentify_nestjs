@@ -34,4 +34,4 @@ import { DataSource } from 'typeorm';
     }),
   ],
 })
-export class DatabaseModule {}
+export class MysqlModule {}
