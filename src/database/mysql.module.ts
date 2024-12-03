@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
@@ -22,12 +22,13 @@ import { DataSource } from 'typeorm';
       }),
 
       dataSourceFactory: async (options) => {
+        const logger = new Logger();
         try {
           const dataSource = await new DataSource(options).initialize();
-          console.log('Data Source has been initialized!');
+          logger.log('Data Source has been initialized!');
           return dataSource;
         } catch (err) {
-          console.log('Error establishing database connection:', err);
+          logger.log('Error establishing database connection:', err);
         }
       },
     }),
