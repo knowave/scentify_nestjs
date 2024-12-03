@@ -1,4 +1,5 @@
 import { BaseEntity } from 'src/common/base.entity';
+import { Role } from 'src/common/enums/role.enum';
 import { Column, Entity } from 'typeorm';
 
 @Entity()
@@ -38,6 +39,9 @@ export class User extends BaseEntity {
     comment: '사용자 소개글',
   })
   introduction: string;
+
+  @Column({ type: 'enum', enum: Role, default: Role.user })
+  role: Role;
 
   @Column({
     type: 'varchar',
