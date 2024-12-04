@@ -1,38 +1,23 @@
-import { Logger, Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Logger, Module, OnModuleInit } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { IS_LOCAL_ENV } from 'src/common/constants/constant';
 import { DataSource } from 'typeorm';
+import { ormModuleOptions } from './type-orm.config';
 
 @Module({
-  imports: [
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        type: 'mysql',
-        host: configService.get('DB_HOST'),
-        port: configService.get('DB_PORT'),
-        username: configService.get('DB_USERNAME'),
-        password: configService.get('DB_PASSWORD'),
-        database: configService.get('DB_NAME'),
-        entities: [__dirname + '../../domains/**/entities/**.entity{.ts,.js}'],
-        migrations: [__dirname + '/migrations/*.ts'],
-        synchronize: IS_LOCAL_ENV,
-        migrationsRun: true,
-      }),
-
-      dataSourceFactory: async (options) => {
-        const logger = new Logger();
-        try {
-          const dataSource = await new DataSource(options).initialize();
-          logger.log('Data Source has been initialized!');
-          return dataSource;
-        } catch (err) {
-          logger.log('Error establishing database connection:', err);
-        }
-      },
-    }),
-  ],
+  imports: [TypeOrmModule.forRoot(ormModuleOptions)],
 })
-export class MysqlModule {}
+export class MysqlModule implements OnModuleInit {
+  private readonly logger = new Logger(MysqlModule.name);
+  constructor(private dataSource: DataSource) {}
+
+  async onModuleInit() {
+    try {
+      if (this.dataSource.isInitialized)
+        this.logger.log(
+          `Connected to database: ${this.dataSource.options.database}`,
+        );
+    } catch (err) {
+      this.logger.error('Failed to connect to database:', err);
+    }
+  }
+}
