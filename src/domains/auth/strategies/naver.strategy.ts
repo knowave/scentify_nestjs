@@ -1,16 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-naver';
 import { NaverValidateDto } from '../dto/naver-validate.dto';
+import {
+  NAVER_CALLBACK_URL,
+  NAVER_CLIENT_ID,
+  NAVER_CLIENT_SECRET,
+} from 'src/common/env';
 
 @Injectable()
 export class NaverStrategy extends PassportStrategy(Strategy, 'naver') {
-  constructor(private readonly configService: ConfigService) {
+  constructor() {
     super({
-      clientId: configService.get<string>('NAVER_CLIENT_ID'),
-      clientSecret: configService.get<string>('NAVER_CLIENT_SECRET'),
-      callbackURL: configService.get<string>('NAVER_CALLBACK_URL'),
+      clientId: NAVER_CLIENT_ID,
+      clientSecret: NAVER_CLIENT_SECRET,
+      callbackURL: NAVER_CALLBACK_URL,
     });
   }
 
