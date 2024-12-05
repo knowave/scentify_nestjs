@@ -12,7 +12,7 @@ import { AuthService } from '../auth.service';
 export class NaverStrategy extends PassportStrategy(Strategy, 'naver') {
   constructor(private readonly authService: AuthService) {
     super({
-      clientId: NAVER_CLIENT_ID,
+      clientID: NAVER_CLIENT_ID,
       clientSecret: NAVER_CLIENT_SECRET,
       callbackURL: NAVER_CALLBACK_URL,
     });

@@ -1,7 +1,6 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { ExtractJwt } from 'passport-jwt';
-import { Strategy } from 'passport-naver';
+import { ExtractJwt, Strategy } from 'passport-jwt';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JWT_ACCESS_TOKEN_SECRET } from 'src/common/env';
 import { User } from 'src/domains/user/entities/user.entity';
 import { UNAUTHORIZED_USER } from 'src/domains/user/error/user.error';

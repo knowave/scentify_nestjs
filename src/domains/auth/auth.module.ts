@@ -18,9 +18,7 @@ import { LocalStrategy } from './strategies/local.strategy';
     PassportModule,
     JwtModule.register({
       secret: JWT_ACCESS_TOKEN_SECRET,
-      signOptions: {
-        expiresIn: `${JWT_ACCESS_TOKEN_EXPIRATION_TIME}`,
-      },
+      signOptions: { expiresIn: JWT_ACCESS_TOKEN_EXPIRATION_TIME },
     }),
   ],
   providers: [AuthService, JwtStrategy, NaverStrategy, LocalStrategy],
