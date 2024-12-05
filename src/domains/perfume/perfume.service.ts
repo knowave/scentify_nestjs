@@ -3,10 +3,15 @@ import { CreatePerfumeDto } from './dto/create-perfume.dto';
 import { Perfume } from './entities/perfume.entity';
 import { PerfumeRepository } from './perfume.repository';
 import { EXIST_PERFUME } from './error/perfume.error';
+import { S3Service } from '../s3/s3.service';
+import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class PerfumeService {
-  constructor(private readonly perfumeRepository: PerfumeRepository) {}
+  constructor(
+    private readonly perfumeRepository: PerfumeRepository,
+    private readonly s3Service: S3Service,
+  ) {}
 
   async createPerfumes(createPerfumesDto: CreatePerfumeDto[]): Promise<void> {
     const perfumes: Perfume[] = [];
@@ -23,8 +28,23 @@ export class PerfumeService {
       gender,
       season,
       scents,
-      imageUrl,
+      image,
     } of createPerfumesDto) {
+      let imageUrl: string;
+
+      if (image) {
+        const { fileName, mimeType, fileContent } = image;
+        const newFileName = `${uuid()}-${fileName}`;
+
+        const uploadFile = await this.s3Service.uploadObject(
+          newFileName,
+          fileContent,
+          mimeType,
+        );
+
+        imageUrl = uploadFile.Key;
+      }
+
       const createPerfume = this.perfumeRepository.create({
         name,
         brand,
@@ -36,7 +56,7 @@ export class PerfumeService {
         gender,
         season,
         scents,
-        imageUrl,
+        imageUrl: imageUrl || null,
       });
 
       perfumes.push(createPerfume);

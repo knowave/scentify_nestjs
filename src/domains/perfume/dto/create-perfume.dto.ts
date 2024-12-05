@@ -1,4 +1,15 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { Perfume } from '../entities/perfume.entity';
+import { UploadFileDto } from 'src/common/upload-file.dto';
 
-export class CreatePerfumeDto extends PartialType(Perfume) {}
+export class CreatePerfumeDto {
+  name: string;
+  brand: string;
+  description: string;
+  price: number;
+  intensity: string;
+  mood: string;
+  longevity: string;
+  gender: string;
+  season: string[];
+  scents: string[];
+  image: UploadFileDto;
+}
