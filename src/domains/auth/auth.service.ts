@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { User } from '../user/entities/user.entity';
 import { UserRepository } from '../user/user.repository';
 import { JwtService } from '@nestjs/jwt';
@@ -9,6 +9,8 @@ import {
   JWT_REFRESH_TOKEN_SECRET,
 } from 'src/common/env';
 import { SocialLoginType } from './enums/social-login-type.enum';
+import * as bcrypt from 'bcrypt';
+import { INVALID_AUTH_ERROR } from './error/auth.error';
 
 @Injectable()
 export class AuthService {
@@ -16,6 +18,15 @@ export class AuthService {
     private readonly userRepository: UserRepository,
     private readonly jwtService: JwtService,
   ) {}
+
+  async validateUser(email: string, password: string): Promise<User> {
+    const user = await this.userRepository.findOneByEmail(email);
+
+    await this.verifyPassword(password, user.password);
+
+    delete user.password;
+    return user;
+  }
 
   async validateNaver(naverId: string): Promise<User> {
     const user = await this.userRepository.findOne({
@@ -78,5 +89,17 @@ export class AuthService {
       secret: JWT_REFRESH_TOKEN_SECRET,
       expiresIn: JWT_REFRESH_TOKEN_EXPIRATION_TIME,
     });
+  }
+
+  private async verifyPassword(
+    plainTextPassword: string,
+    hashedPassword: string,
+  ): Promise<void> {
+    const isPasswordMatch = await bcrypt.compare(
+      plainTextPassword,
+      hashedPassword,
+    );
+
+    if (!isPasswordMatch) throw new BadRequestException(INVALID_AUTH_ERROR);
   }
 }

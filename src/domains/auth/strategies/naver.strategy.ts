@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-naver';
-import { NaverValidateDto } from '../dto/naver-validate.dto';
 import {
   NAVER_CALLBACK_URL,
   NAVER_CLIENT_ID,
@@ -19,16 +18,12 @@ export class NaverStrategy extends PassportStrategy(Strategy, 'naver') {
     });
   }
 
-  async validate(naverValidateDto: NaverValidateDto) {
-    const { accessToken, refreshToken, profile } = naverValidateDto;
-    const { email, nickname } = profile;
+  async validate(accessToken: string, refreshToken: string, profile: any) {
+    const naverId = profile.id;
+    const user = await this.authService.validateNaver(naverId);
 
-    const user = await this.authService.validateUser(email, nickname);
+    if (user === null) return { naverId, type: 'naver' };
 
-    // 액세스 토큰과 리프레시 토큰을 저장하거나 반환
-    user['accessToken'] = accessToken;
-    user['refreshToken'] = refreshToken;
-
-    return user;
+    return { user, type: 'naver' };
   }
 }

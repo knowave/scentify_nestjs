@@ -10,6 +10,7 @@ import {
 } from 'src/common/env';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { NaverStrategy } from './strategies/naver.strategy';
+import { LocalStrategy } from './strategies/local.strategy';
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { NaverStrategy } from './strategies/naver.strategy';
       },
     }),
   ],
-  providers: [AuthService, JwtStrategy, NaverStrategy],
+  providers: [AuthService, JwtStrategy, NaverStrategy, LocalStrategy],
   controllers: [AuthController],
 })
 export class AuthModule {}
