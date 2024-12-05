@@ -82,6 +82,11 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
+  async logout(user: User): Promise<void> {
+    user.token = null;
+    await this.userRepository.save(user);
+  }
+
   private createAccessToken(user: User) {
     const payload = { id: user.id, email: user.email };
 
