@@ -11,6 +11,8 @@ import {
 import { SocialLoginType } from './enums/social-login-type.enum';
 import * as bcrypt from 'bcrypt';
 import { INVALID_AUTH_ERROR } from './error/auth.error';
+import { LoginDto } from './dto/login.dto';
+import { LoginResponseDto } from './dto/login-response.dto';
 
 @Injectable()
 export class AuthService {
@@ -67,10 +69,17 @@ export class AuthService {
     return user;
   }
 
-  async login() {
-    // const accessToken = this.createAccessToken(user);
-    // const refreshToken = this.createRefreshToken(user);
-    // return { accessToken, refreshToken };
+  async login({ email, password }: LoginDto): Promise<LoginResponseDto> {
+    const user = await this.userRepository.findOneByEmail(email);
+    await this.validateUser(email, password);
+
+    const accessToken = this.createAccessToken(user);
+    const refreshToken = this.createRefreshToken(user);
+
+    user.token = refreshToken;
+    await this.userRepository.save(user);
+
+    return { accessToken, refreshToken };
   }
 
   private createAccessToken(user: User) {
