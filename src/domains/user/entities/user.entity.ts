@@ -1,5 +1,6 @@
 import { BaseEntity } from 'src/common/base.entity';
 import { Role } from 'src/common/enums/role.enum';
+import { SocialLoginType } from 'src/domains/auth/enums/social-login-type.enum';
 import { Column, Entity } from 'typeorm';
 
 @Entity()
@@ -20,6 +21,14 @@ export class User extends BaseEntity {
     comment: '소셜 로그인 사용자 ID (ex: naver_12345, kakao_67890)',
   })
   socialId: string;
+
+  @Column({
+    type: 'enum',
+    enum: SocialLoginType,
+    nullable: true,
+    comment: '소셜 로그인 타입 (NAVER, KAKAO, GOOGLE)',
+  })
+  socialLoginType: SocialLoginType;
 
   @Column({
     type: 'varchar',
