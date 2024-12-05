@@ -8,6 +8,7 @@ import {
   JWT_REFRESH_TOKEN_EXPIRATION_TIME,
   JWT_REFRESH_TOKEN_SECRET,
 } from 'src/common/env';
+import { SocialLoginType } from './enums/social-login-type.enum';
 
 @Injectable()
 export class AuthService {
@@ -16,22 +17,49 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateUser(email: string, nickname: string): Promise<User> {
-    let user = await this.userRepository.findOneByEmail(email);
+  async validateNaver(naverId: string): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: {
+        socialId: naverId,
+        socialLoginType: SocialLoginType.NAVER,
+      },
+    });
 
-    if (!user) {
-      user = this.userRepository.create({ email, username: email, nickname });
-      await this.userRepository.save(user);
-    }
+    if (!user) return null;
 
     return user;
   }
 
-  async login(user: User) {
-    const accessToken = this.createAccessToken(user);
-    const refreshToken = this.createRefreshToken(user);
+  async validateKakao(kakaoId: string): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: {
+        socialId: kakaoId,
+        socialLoginType: SocialLoginType.KAKAO,
+      },
+    });
 
-    return { accessToken, refreshToken };
+    if (!user) return null;
+
+    return user;
+  }
+
+  async validateGoogle(googleId: string): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: {
+        socialId: googleId,
+        socialLoginType: SocialLoginType.GOOGLE,
+      },
+    });
+
+    if (!user) return null;
+
+    return user;
+  }
+
+  async login() {
+    // const accessToken = this.createAccessToken(user);
+    // const refreshToken = this.createRefreshToken(user);
+    // return { accessToken, refreshToken };
   }
 
   private createAccessToken(user: User) {
