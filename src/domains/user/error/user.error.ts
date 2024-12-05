@@ -7,3 +7,8 @@ export const UNAUTHORIZED_USER = {
   code: 'UNAUTHORIZED_USER',
   message: 'Unauthorized user',
 };
+
+export const EXIST_EMAIL = {
+  code: 'EXIST_EMAIL',
+  message: 'Exist email',
+};

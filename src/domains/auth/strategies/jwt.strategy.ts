@@ -4,7 +4,7 @@ import { ExtractJwt } from 'passport-jwt';
 import { Strategy } from 'passport-naver';
 import { JWT_ACCESS_TOKEN_SECRET } from 'src/common/env';
 import { User } from 'src/domains/user/entities/user.entity';
-import { UNAUTHORIZED_USER } from 'src/domains/user/error/error-code';
+import { UNAUTHORIZED_USER } from 'src/domains/user/error/user.error';
 import { UserService } from 'src/domains/user/user.service';
 
 @Injectable()
