@@ -32,13 +32,6 @@ export class User extends BaseEntity {
 
   @Column({
     type: 'varchar',
-    nullable: true,
-    comment: '소셜 로그인 제공자 (ex: naver, kakao)',
-  })
-  provider: string;
-
-  @Column({
-    type: 'varchar',
     length: 128,
     comment: '사용자 비밀번호',
     nullable: true,
