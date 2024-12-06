@@ -22,7 +22,7 @@ export class AuthService {
   ) {}
 
   async validateUser(email: string, password: string): Promise<User> {
-    const user = await this.userRepository.findOneByEmail(email);
+    const user = await this.userRepository.findOneByEmailWithValidation(email);
 
     await this.verifyPassword(password, user.password);
 
@@ -70,7 +70,7 @@ export class AuthService {
   }
 
   async login({ email, password }: LoginDto): Promise<LoginResponseDto> {
-    const user = await this.userRepository.findOneByEmail(email);
+    const user = await this.userRepository.findOneByEmailWithValidation(email);
     await this.validateUser(email, password);
 
     const accessToken = this.createAccessToken(user);
