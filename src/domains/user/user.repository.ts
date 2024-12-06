@@ -21,6 +21,7 @@ export class UserRepository extends Repository<User> {
 
   async findOneByEmailWithValidation(email: string): Promise<User> {
     const user = await this.createQueryBuilder('user')
+      .addSelect('user.password')
       .where('user.email = :email', { email })
       .getOne();
 
