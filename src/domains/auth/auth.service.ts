@@ -71,7 +71,7 @@ export class AuthService {
 
   async login({ email, password }: LoginDto): Promise<LoginResponseDto> {
     const user = await this.userRepository.findOneByEmailWithValidation(email);
-    await this.validateUser(email, password);
+    await this.verifyPassword(password, user.password);
 
     const accessToken = this.createAccessToken(user);
     const refreshToken = this.createRefreshToken(user);
