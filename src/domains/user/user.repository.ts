@@ -19,12 +19,20 @@ export class UserRepository extends Repository<User> {
     return user;
   }
 
-  async findOneByEmail(email: string): Promise<User> {
+  async findOneByEmailWithValidation(email: string): Promise<User> {
     const user = await this.createQueryBuilder('user')
-      .where('user.email = "email', { email })
+      .where('user.email = :email', { email })
       .getOne();
 
     if (!user) throw new NotFoundException(NOT_FOUND_USER);
+
+    return user;
+  }
+
+  async findOneByEmail(email: string): Promise<User> {
+    const user = await this.createQueryBuilder('user')
+      .where('user.email = :email', { email })
+      .getOne();
 
     return user;
   }
