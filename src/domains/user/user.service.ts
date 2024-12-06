@@ -3,6 +3,7 @@ import { UserRepository } from './user.repository';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { EXIST_EMAIL } from './error/user.error';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -23,10 +24,12 @@ export class UserService {
     // 더블 체크
     if (existEmail) throw new BadRequestException(EXIST_EMAIL);
 
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     await this.userRepository.save(
       this.userRepository.create({
         email,
-        password,
+        password: hashedPassword,
         username,
         nickname,
         phoneNumber,
