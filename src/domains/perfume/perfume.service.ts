@@ -56,7 +56,9 @@ export class PerfumeService {
         gender,
         season,
         scents,
-        imageUrl: imageUrl || null,
+        imageUrl: imageUrl
+          ? imageUrl
+          : 'https://example.com/images/ocean-breeze.jpg',
       });
 
       perfumes.push(createPerfume);
