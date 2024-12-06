@@ -58,12 +58,12 @@ export class User extends BaseEntity {
   })
   introduction: string;
 
-  @Column({ type: 'enum', enum: Role, default: Role.user })
+  @Column({ type: 'enum', enum: Role, default: Role.USER })
   role: Role;
 
   @Column({
     type: 'varchar',
-    length: 128,
+    length: 512,
     nullable: true,
     comment: '사용자 토큰',
     select: false,
