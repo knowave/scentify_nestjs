@@ -39,7 +39,7 @@ export class User extends BaseEntity {
   })
   password: string;
 
-  @Column({ type: 'varchar', comment: '사용자 전화번호' })
+  @Column({ type: 'varchar', nullable: true, comment: '사용자 전화번호' })
   phoneNumber: string;
 
   @Column({
