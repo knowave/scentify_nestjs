@@ -20,9 +20,11 @@ export class NaverStrategy extends PassportStrategy(Strategy, 'naver') {
 
   async validate(accessToken: string, refreshToken: string, profile: any) {
     const naverId = profile.id;
+    const email = profile.emails && profile.emails[0]?.value;
+
     const user = await this.authService.validateNaver(naverId);
 
-    if (user === null) return { naverId, type: 'naver' };
+    if (user === null) return { naverId, email, type: 'naver' };
 
     return { user, type: 'naver' };
   }
