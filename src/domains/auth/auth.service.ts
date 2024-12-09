@@ -13,6 +13,8 @@ import * as bcrypt from 'bcrypt';
 import { INVALID_AUTH_ERROR } from './error/auth.error';
 import { LoginDto } from './dto/login.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
+import { SocialLoginDto } from './dto/social-login.dto';
+import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class AuthService {
@@ -87,6 +89,32 @@ export class AuthService {
     await this.userRepository.save(user);
   }
 
+  async naverLogin(socialLoginDto: SocialLoginDto): Promise<LoginResponseDto> {
+    const { socialId, email, type } = socialLoginDto;
+    const naverUniqueValue = `${this.filteredSocialLoginType(type)}-${uuid()}`;
+    let user: User;
+
+    if (socialId) {
+      user = await this.userRepository.save(
+        this.userRepository.create({
+          email,
+          username: naverUniqueValue,
+          socialId: socialId,
+          socialLoginType: this.filteredSocialLoginType(type),
+        }),
+      );
+    } else {
+      user = await this.validateNaver(socialId);
+    }
+
+    const accessToken = this.createAccessToken(user);
+    const refreshToken = this.createRefreshToken(user);
+    user.token = accessToken;
+    await this.userRepository.save(user);
+
+    return { accessToken, refreshToken, user };
+  }
+
   private createAccessToken(user: User) {
     const payload = { id: user.id, email: user.email };
 
@@ -115,5 +143,25 @@ export class AuthService {
     );
 
     if (!isPasswordMatch) throw new BadRequestException(INVALID_AUTH_ERROR);
+  }
+
+  private filteredSocialLoginType(type: string): SocialLoginType {
+    let socialLoginType: SocialLoginType;
+
+    switch (type) {
+      case 'naver':
+        socialLoginType = SocialLoginType.NAVER;
+        break;
+
+      case 'kakao':
+        socialLoginType = SocialLoginType.KAKAO;
+        break;
+
+      case 'google':
+        socialLoginType = SocialLoginType.GOOGLE;
+        break;
+    }
+
+    return socialLoginType;
   }
 }
