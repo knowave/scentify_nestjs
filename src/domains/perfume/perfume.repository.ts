@@ -35,12 +35,12 @@ export class PerfumeRepository extends Repository<Perfume> {
         });
         break;
       case recommendPerfumeDto.season:
-        qb.andWhere('perfume.season LIKE :season', {
+        qb.andWhere('perfume.season IN (:...season)', {
           season: `%${recommendPerfumeDto.season}%`,
         });
         break;
       case recommendPerfumeDto.scents:
-        qb.andWhere('perfume.scents LIKE :scents', {
+        qb.andWhere('perfume.scents IN (:...scents)', {
           scents: `%${recommendPerfumeDto.scents}%`,
         });
         break;
