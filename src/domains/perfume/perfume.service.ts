@@ -5,6 +5,7 @@ import { PerfumeRepository } from './perfume.repository';
 import { EXIST_PERFUME } from './error/perfume.error';
 import { S3Service } from '../s3/s3.service';
 import { v4 as uuid } from 'uuid';
+import { RecommendPerfumeDto } from './dto/recommend-perfume.dto';
 
 @Injectable()
 export class PerfumeService {
@@ -65,6 +66,14 @@ export class PerfumeService {
     }
 
     await this.perfumeRepository.save(perfumes);
+  }
+
+  async recommendPerfume(
+    recommendPerfumeDto: RecommendPerfumeDto,
+  ): Promise<Perfume[]> {
+    return await this.perfumeRepository.findPerfumeRecommend(
+      recommendPerfumeDto,
+    );
   }
 
   private async validatePerfume(names: string[]) {

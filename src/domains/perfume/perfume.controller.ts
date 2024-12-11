@@ -4,6 +4,9 @@ import { RoleGuard } from '../auth/guards/role.guard';
 import { Roles } from 'src/common/decorators/role.decorator';
 import { Role } from 'src/common/enums/role.enum';
 import { CreatePerfumeDto } from './dto/create-perfume.dto';
+import { Public } from '../../common/decorators/public.decorator';
+import { RecommendPerfumeDto } from './dto/recommend-perfume.dto';
+import { Perfume } from './entities/perfume.entity';
 
 @Controller('perfume')
 export class PerfumeController {
@@ -14,5 +17,13 @@ export class PerfumeController {
   @Post('')
   async createPerfume(@Body() createPerfumesDto: CreatePerfumeDto[]) {
     return await this.perfumeService.createPerfumes(createPerfumesDto);
+  }
+
+  @Public()
+  @Post('recommend/perfume')
+  async recommendPerfume(
+    @Body() recommendPerfumeDto: RecommendPerfumeDto,
+  ): Promise<Perfume[]> {
+    return await this.perfumeService.recommendPerfume(recommendPerfumeDto);
   }
 }
