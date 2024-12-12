@@ -4,6 +4,7 @@ import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { EXIST_EMAIL } from './error/user.error';
 import * as bcrypt from 'bcrypt';
+import { Role } from 'src/common/enums/role.enum';
 
 @Injectable()
 export class UserService {
@@ -17,7 +18,10 @@ export class UserService {
     return await this.userRepository.findOneByEmailWithValidation(email);
   }
 
-  async createUser(createUserDto: CreateUserDto): Promise<void> {
+  async createUser(
+    createUserDto: CreateUserDto,
+    isAdmin?: boolean,
+  ): Promise<void> {
     const { email, password, username, nickname, phoneNumber } = createUserDto;
     const existEmail = await this.userRepository.findOneByEmail(email);
 
@@ -33,6 +37,7 @@ export class UserService {
         username,
         nickname,
         phoneNumber,
+        role: isAdmin ? Role.ADMIN : Role.USER,
       }),
     );
     return;
