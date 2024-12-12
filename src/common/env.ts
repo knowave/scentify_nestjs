@@ -7,10 +7,14 @@ export const DATABASE_USER = process.env.DATABASE_USER;
 export const DATABASE_PASSWORD = process.env.DATABASE_PASSWORD;
 export const DATABASE_NAME = process.env.DATABASE_NAME;
 
-// Social Login Environment Variables
+// Naver Login Environment Variables
 export const NAVER_CLIENT_ID = process.env.NAVER_CLIENT_ID;
 export const NAVER_CLIENT_SECRET = process.env.NAVER_CLIENT_SECRET;
 export const NAVER_CALLBACK_URL = process.env.NAVER_CALLBACK_URL;
+
+// Kakao Login Environment Variables
+export const KAKAO_CLIENT_ID = process.env.KAKAO_CLIENT_ID;
+export const KAKAO_CALLBACK_URL = process.env.KAKAO_CALLBACK_URL;
 
 // JWT Environment Variables
 export const JWT_ACCESS_TOKEN_SECRET = process.env.JWT_ACCESS_TOKEN_SECRET;
