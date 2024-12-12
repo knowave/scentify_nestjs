@@ -43,7 +43,7 @@ export class AuthController {
 
   @Public()
   @Get('naver-login')
-  @Render('login')
+  @Render('naver-login')
   naverLoginPage() {
     return { message: '이 곳은 네이버 로그인 페이지입니다.' };
   }
