@@ -6,6 +6,7 @@ import { CurrentUser } from 'src/common/decorators/user.decorator';
 import { User } from '../user/entities/user.entity';
 import { Public } from 'src/common/decorators/public.decorator';
 import { NaverGuard } from './guards/naver.guard';
+import { KakaoGuard } from './guards/kakao.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -33,12 +34,25 @@ export class AuthController {
   @Public()
   @UseGuards(NaverGuard)
   @Get('/naver/callback')
-  async naverCallback(@CurrentUser() user) {
-    return await this.authService.naverLogin({
-      socialId: user.naverId,
-      email: user.email,
-      type: user.type,
-    });
+  async naverCallback(@CurrentUser() user: any): Promise<LoginResponseDto> {
+    if (
+      user &&
+      typeof user === 'object' &&
+      'naverId' in user &&
+      'email' in user &&
+      'type' in user &&
+      Object.keys(user).length === 3
+    ) {
+      return await this.authService.socialLogin({
+        socialId: user.naverId,
+        email: user.email,
+        type: user.type,
+      });
+    } else {
+      const accessToken = this.authService.createAccessToken(user);
+      const refreshToken = this.authService.createRefreshToken(user);
+      return { accessToken, refreshToken, user };
+    }
   }
 
   @Public()
@@ -46,5 +60,36 @@ export class AuthController {
   @Render('naver-login')
   naverLoginPage() {
     return { message: '이 곳은 네이버 로그인 페이지입니다.' };
+  }
+
+  @Public()
+  @UseGuards(KakaoGuard)
+  @Get('kakao')
+  async kakaoLogin() {
+    return;
+  }
+
+  @Public()
+  @UseGuards(KakaoGuard)
+  @Get('kakao/callback')
+  async kakaoCallback(@CurrentUser() user: any): Promise<LoginResponseDto> {
+    if (user.id) {
+      return await this.authService.socialLogin({
+        socialId: user.kakaoId,
+        email: user.email,
+        type: user.type,
+      });
+    } else {
+      const accessToken = this.authService.createAccessToken(user);
+      const refreshToken = this.authService.createRefreshToken(user);
+      return { accessToken, refreshToken, user };
+    }
+  }
+
+  @Public()
+  @Get('kakao-login')
+  @Render('kakao-login')
+  kakaoLoginPage() {
+    return { message: '이 곳은 카카오 로그인 페이지입니다.' };
   }
 }

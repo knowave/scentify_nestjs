@@ -11,6 +11,7 @@ import {
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { NaverStrategy } from './strategies/naver.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
+import { KakaoStrategy } from './strategies/kakao.strategy';
 
 @Module({
   imports: [
@@ -21,7 +22,13 @@ import { LocalStrategy } from './strategies/local.strategy';
       signOptions: { expiresIn: JWT_ACCESS_TOKEN_EXPIRATION_TIME },
     }),
   ],
-  providers: [AuthService, JwtStrategy, NaverStrategy, LocalStrategy],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    NaverStrategy,
+    LocalStrategy,
+    KakaoStrategy,
+  ],
   controllers: [AuthController],
 })
 export class AuthModule {}

@@ -89,23 +89,18 @@ export class AuthService {
     await this.userRepository.save(user);
   }
 
-  async naverLogin(socialLoginDto: SocialLoginDto): Promise<LoginResponseDto> {
+  async socialLogin(socialLoginDto: SocialLoginDto): Promise<LoginResponseDto> {
     const { socialId, email, type } = socialLoginDto;
     const naverUniqueValue = `${this.filteredSocialLoginType(type)}-${uuid()}`;
-    let user: User;
 
-    if (socialId) {
-      user = await this.userRepository.save(
-        this.userRepository.create({
-          email,
-          username: naverUniqueValue,
-          socialId: socialId,
-          socialLoginType: this.filteredSocialLoginType(type),
-        }),
-      );
-    } else {
-      user = await this.validateNaver(socialId);
-    }
+    const user = await this.userRepository.save(
+      this.userRepository.create({
+        email,
+        username: naverUniqueValue,
+        socialId: socialId,
+        socialLoginType: this.filteredSocialLoginType(type),
+      }),
+    );
 
     const accessToken = this.createAccessToken(user);
     const refreshToken = this.createRefreshToken(user);
@@ -115,7 +110,7 @@ export class AuthService {
     return { accessToken, refreshToken, user };
   }
 
-  private createAccessToken(user: User) {
+  createAccessToken(user: User) {
     const payload = { id: user.id, email: user.email };
 
     return this.jwtService.sign(payload, {
@@ -124,7 +119,7 @@ export class AuthService {
     });
   }
 
-  private createRefreshToken(user: User) {
+  createRefreshToken(user: User) {
     const payload = { id: user.id, email: user.email };
 
     return this.jwtService.sign(payload, {

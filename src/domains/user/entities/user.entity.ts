@@ -11,7 +11,7 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar', comment: '사용자 이름' })
   username: string;
 
-  @Column({ type: 'varchar', comment: '사용자 닉네임' })
+  @Column({ type: 'varchar', nullable: true, comment: '사용자 닉네임' })
   nickname: string;
 
   @Column({
