@@ -46,8 +46,8 @@ export class UserRepository extends Repository<User> {
         userId,
       })
       .andWhere('user.deletedAt IS NOT NULL')
-      .andWhere('user.isDelete = true')
-      .andWhere('user.deleteAt >= DATE(:date)', {
+      .andWhere('user.isDeleted = true')
+      .andWhere('user.deletedAt >= DATE(:date)', {
         date,
       })
       .getOne();
