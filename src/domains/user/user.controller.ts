@@ -54,4 +54,10 @@ export class UserController {
   async deleteUser(@CurrentUser() user: User): Promise<void> {
     return await this.userService.deleteUser(user.id);
   }
+
+  @Public()
+  @Post('/restore-user')
+  async restoreDeletedUser(@CurrentUser() user: User): Promise<void> {
+    return await this.userService.restoreDeletedUser(user.id);
+  }
 }

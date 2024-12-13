@@ -103,6 +103,15 @@ export class UserService {
     });
   }
 
+  async restoreDeletedUser(userId: number): Promise<void> {
+    const user =
+      await this.userRepository.findOneByIdAndDeletedWithThirtyDays(userId);
+
+    user.deletedAt = null;
+    user.isDeleted = false;
+    await this.userRepository.save(user);
+  }
+
   private async hashPassword(password: string): Promise<string> {
     return await bcrypt.hash(password, this.salt);
   }
