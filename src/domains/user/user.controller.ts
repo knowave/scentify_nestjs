@@ -40,7 +40,6 @@ export class UserController {
     return await this.userService.createUser(createUserDto, true);
   }
 
-  @Public()
   @Patch('')
   async updateUser(
     @CurrentUser() user: User,
@@ -49,14 +48,12 @@ export class UserController {
     return await this.userService.updateUser(user.id, updateUserDto);
   }
 
-  @Public()
   @Delete('')
   async deleteUser(@CurrentUser() user: User): Promise<void> {
     return await this.userService.deleteUser(user.id);
   }
 
-  @Public()
-  @Post('/restore-user')
+  @Post('restore-user')
   async restoreDeletedUser(@CurrentUser() user: User): Promise<void> {
     return await this.userService.restoreDeletedUser(user.id);
   }
