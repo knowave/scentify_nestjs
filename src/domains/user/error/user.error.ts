@@ -12,3 +12,8 @@ export const EXIST_EMAIL = {
   code: 'EXIST_EMAIL',
   message: 'Exist email',
 };
+
+export const NOT_FOUND_DELETED_USER = {
+  code: 'NOT_FOUND_DELETED_USER',
+  message: 'Not found deleted user',
+};
