@@ -94,6 +94,15 @@ export class UserService {
     await this.userRepository.save(user);
   }
 
+  async deleteUser(userId: number): Promise<void> {
+    const user = await this.userRepository.findOneById(userId);
+
+    await this.userRepository.softDelete({
+      id: user.id,
+      isDeleted: true,
+    });
+  }
+
   private async hashPassword(password: string): Promise<string> {
     return await bcrypt.hash(password, this.salt);
   }
