@@ -70,6 +70,6 @@ export class User extends BaseEntity {
   })
   token: string;
 
-  @Column({ type: 'boolean', nullable: true, comment: '탈퇴여부' })
+  @Column({ type: 'boolean', default: false, comment: '탈퇴여부' })
   isDeleted: boolean;
 }
