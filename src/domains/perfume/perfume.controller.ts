@@ -13,7 +13,7 @@ export class PerfumeController {
   constructor(private readonly perfumeService: PerfumeService) {}
 
   @UseGuards(RoleGuard)
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN, Role.SUPER_ADMIN)
   @Post('')
   async createPerfume(@Body() createPerfumesDto: CreatePerfumeDto[]) {
     return await this.perfumeService.createPerfumes(createPerfumesDto);
