@@ -5,10 +5,20 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { EXIST_EMAIL } from './error/user.error';
 import * as bcrypt from 'bcrypt';
 import { Role } from 'src/common/enums/role.enum';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { v4 as uuid } from 'uuid';
+import { S3Service } from '../s3/s3.service';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userRepository: UserRepository) {}
+  private readonly salt: number;
+
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly s3Service: S3Service,
+  ) {
+    this.salt = 10;
+  }
 
   async getUserById(id: number): Promise<User> {
     return await this.userRepository.findOneById(id);
@@ -28,12 +38,10 @@ export class UserService {
     // 더블 체크
     if (existEmail) throw new BadRequestException(EXIST_EMAIL);
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-
     await this.userRepository.save(
       this.userRepository.create({
         email,
-        password: hashedPassword,
+        password: await this.hashPassword(password),
         username,
         nickname,
         phoneNumber,
@@ -41,5 +49,52 @@ export class UserService {
       }),
     );
     return;
+  }
+
+  async updateUser(
+    userId: number,
+    updateUserDto: UpdateUserDto,
+  ): Promise<void> {
+    let profileImage: string;
+    const {
+      email,
+      password,
+      username,
+      nickname,
+      phoneNumber,
+      image,
+      introduction,
+    } = updateUserDto;
+
+    const user = await this.userRepository.findOneById(userId);
+
+    if (email) user.email = email;
+    if (username) user.username = username;
+    if (nickname) user.nickname = nickname;
+    if (phoneNumber) user.phoneNumber = phoneNumber;
+    if (introduction) user.introduction = introduction;
+    if (password) {
+      user.password = await this.hashPassword(password);
+    }
+
+    if (image) {
+      const { fileName, mimeType, fileContent } = image;
+      const newFileName = `${uuid()}-${fileName}`;
+
+      const uploadFile = await this.s3Service.uploadObject(
+        newFileName,
+        fileContent,
+        mimeType,
+      );
+
+      profileImage = uploadFile.Key;
+      user.profileImage = profileImage;
+    }
+
+    await this.userRepository.save(user);
+  }
+
+  private async hashPassword(password: string): Promise<string> {
+    return await bcrypt.hash(password, this.salt);
   }
 }
