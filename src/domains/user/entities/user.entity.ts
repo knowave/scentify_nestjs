@@ -72,4 +72,7 @@ export class User extends BaseEntity {
 
   @Column({ type: 'boolean', default: false, comment: '탈퇴여부' })
   isDeleted: boolean;
+
+  @Column('integer', { nullable: true, comment: '향수 고유값' })
+  perfumeId: number;
 }
