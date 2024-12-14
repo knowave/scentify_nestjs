@@ -4,9 +4,10 @@ import { RoleGuard } from '../auth/guards/role.guard';
 import { Roles } from 'src/common/decorators/role.decorator';
 import { Role } from 'src/common/enums/role.enum';
 import { CreatePerfumeDto } from './dto/create-perfume.dto';
-import { Public } from '../../common/decorators/public.decorator';
 import { RecommendPerfumeDto } from './dto/recommend-perfume.dto';
 import { Perfume } from './entities/perfume.entity';
+import { CurrentUser } from 'src/common/decorators/user.decorator';
+import { User } from '../user/entities/user.entity';
 
 @Controller('perfume')
 export class PerfumeController {
@@ -19,11 +20,14 @@ export class PerfumeController {
     return await this.perfumeService.createPerfumes(createPerfumesDto);
   }
 
-  @Public()
   @Post('recommend/perfume')
   async recommendPerfume(
+    @CurrentUser() user: User,
     @Body() recommendPerfumeDto: RecommendPerfumeDto,
-  ): Promise<Perfume[]> {
-    return await this.perfumeService.recommendPerfume(recommendPerfumeDto);
+  ): Promise<Perfume> {
+    return await this.perfumeService.recommendPerfume(
+      user,
+      recommendPerfumeDto,
+    );
   }
 }

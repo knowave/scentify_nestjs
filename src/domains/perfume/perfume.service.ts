@@ -6,11 +6,14 @@ import { EXIST_PERFUME } from './error/perfume.error';
 import { S3Service } from '../s3/s3.service';
 import { v4 as uuid } from 'uuid';
 import { RecommendPerfumeDto } from './dto/recommend-perfume.dto';
+import { User } from '../user/entities/user.entity';
+import { UserRepository } from '../user/user.repository';
 
 @Injectable()
 export class PerfumeService {
   constructor(
     private readonly perfumeRepository: PerfumeRepository,
+    private readonly userRepository: UserRepository,
     private readonly s3Service: S3Service,
   ) {}
 
@@ -69,11 +72,18 @@ export class PerfumeService {
   }
 
   async recommendPerfume(
+    user: User,
     recommendPerfumeDto: RecommendPerfumeDto,
-  ): Promise<Perfume[]> {
-    return await this.perfumeRepository.findPerfumeRecommend(
-      recommendPerfumeDto,
-    );
+  ): Promise<Perfume> {
+    const recommendPerfume =
+      await this.perfumeRepository.findPerfumeRecommend(recommendPerfumeDto);
+
+    if (recommendPerfume) {
+      user.perfumeId = recommendPerfume.id;
+      await this.userRepository.save(user);
+    }
+
+    return recommendPerfume;
   }
 
   private async validatePerfume(names: string[]) {

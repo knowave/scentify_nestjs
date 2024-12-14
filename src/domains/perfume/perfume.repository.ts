@@ -17,7 +17,7 @@ export class PerfumeRepository extends Repository<Perfume> {
 
   async findPerfumeRecommend(
     recommendPerfumeDto: RecommendPerfumeDto,
-  ): Promise<Perfume[]> {
+  ): Promise<Perfume> {
     const qb = this.createQueryBuilder('perfume');
 
     switch (recommendPerfumeDto) {
@@ -62,6 +62,6 @@ export class PerfumeRepository extends Repository<Perfume> {
         break;
     }
 
-    return await qb.getMany();
+    return await qb.getOne();
   }
 }
