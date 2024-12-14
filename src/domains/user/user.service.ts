@@ -112,6 +112,10 @@ export class UserService {
     await this.userRepository.save(user);
   }
 
+  async myProfile(userId: number): Promise<User> {
+    return await this.userRepository.findOneByIdWithPerfume(userId);
+  }
+
   private async hashPassword(password: string): Promise<string> {
     return await bcrypt.hash(password, this.salt);
   }

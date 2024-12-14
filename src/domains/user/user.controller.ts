@@ -57,4 +57,9 @@ export class UserController {
   async restoreDeletedUser(@CurrentUser() user: User): Promise<void> {
     return await this.userService.restoreDeletedUser(user.id);
   }
+
+  @Get('profile')
+  async myProfile(@CurrentUser() user: User): Promise<User> {
+    return await this.userService.myProfile(user.id);
+  }
 }

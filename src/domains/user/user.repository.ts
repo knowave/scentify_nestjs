@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { NOT_FOUND_DELETED_USER, NOT_FOUND_USER } from './error/user.error';
+import { Perfume } from '../perfume/entities/perfume.entity';
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -55,5 +56,16 @@ export class UserRepository extends Repository<User> {
     if (!deletedUser) throw new NotFoundException(NOT_FOUND_DELETED_USER);
 
     return;
+  }
+
+  async findOneByIdWithPerfume(id: number): Promise<User> {
+    const user = await this.createQueryBuilder('user')
+      .leftJoin(Perfume, 'perfume', 'user.perfumeId = perfume.id')
+      .where('user.id = :id', { id })
+      .getOne();
+
+    if (!user) throw new NotFoundException(NOT_FOUND_USER);
+
+    return user;
   }
 }
