@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
   Patch,
   Post,
   UseGuards,
@@ -28,9 +29,9 @@ export class UserController {
   }
 
   @Public()
-  @Get('/:id')
-  async getUserById(@CurrentUser() user: User): Promise<User> {
-    return await this.userService.getUserById(user.id);
+  @Get(':userId')
+  async getUserById(@Param('userId') userId: number): Promise<User> {
+    return await this.userService.getUserById(userId);
   }
 
   @UseGuards(RoleGuard)
@@ -58,7 +59,7 @@ export class UserController {
     return await this.userService.restoreDeletedUser(user.id);
   }
 
-  @Get('profile')
+  @Get('/my/profile')
   async myProfile(@CurrentUser() user: User): Promise<User> {
     return await this.userService.myProfile(user.id);
   }
