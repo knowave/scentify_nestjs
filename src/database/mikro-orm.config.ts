@@ -20,8 +20,9 @@ export const ormConfig: Options<PostgreSqlDriver> = {
   entitiesTs: ['./src/domains/**/entities/**.entity.ts'],
   driver: PostgreSqlDriver,
   migrations: {
-    path: './dist/database/migrations',
-    pathTs: './src/database/migrations',
+    path: './migrations/*.ts',
+    tableName: 'migrations',
+    transactional: true,
   },
   logger: (message) => {
     return IS_LOCAL_ENV ? logger.log(message) : null;
