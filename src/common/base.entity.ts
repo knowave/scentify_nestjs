@@ -9,13 +9,13 @@ import {
 
 @Filter({ name: 'softDelete', cond: { deletedAt: null } })
 export class BaseEntity {
-  @PrimaryKey({ type: 'int' })
+  @PrimaryKey({ type: 'int', autoincrement: true })
   id: number;
 
-  @Property({ type: 'date' })
+  @Property({ type: 'date', onCreate: () => new Date() })
   createdAt: Date;
 
-  @Property({ type: 'date' })
+  @Property({ type: 'date', onCreate: () => new Date() })
   updatedAt: Date;
 
   @Property({ type: 'date', nullable: true })
