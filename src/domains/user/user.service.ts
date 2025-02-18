@@ -37,7 +37,7 @@ export class UserService {
 
     if (existEmail) throw new BadRequestException(EXIST_EMAIL);
 
-    await this.userRepository.insert(
+    await this.userRepository.save(
       this.userRepository.create({
         email,
         password: await this.hashPassword(password),
