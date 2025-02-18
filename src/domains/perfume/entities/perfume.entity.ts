@@ -60,14 +60,14 @@ export class Perfume extends BaseEntity {
   gender: string;
 
   @Property({
-    type: 'simple-array',
+    type: 'jsonb',
     nullable: true,
     comment: '향수가 적합한 계절 목록 (예: 봄, 여름)',
   })
   season: string[];
 
   @Property({
-    type: 'simple-array',
+    type: 'jsonb',
     nullable: true,
     comment: '향수의 주요 향기 성분 목록 (예: 시트러스, 플로럴)',
   })
