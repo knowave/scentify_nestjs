@@ -1,5 +1,6 @@
-import { Entity, Property } from '@mikro-orm/core';
+import { Entity, ManyToOne, Property } from '@mikro-orm/core';
 import { BaseEntity } from 'src/common/base.entity';
+import { User } from 'src/domains/user/entities/user.entity';
 
 @Entity()
 export class Perfume extends BaseEntity {
@@ -79,4 +80,7 @@ export class Perfume extends BaseEntity {
     comment: '향수 이미지의 URL 경로',
   })
   imageUrl: string;
+
+  @ManyToOne(() => User, { nullable: true })
+  user: User;
 }

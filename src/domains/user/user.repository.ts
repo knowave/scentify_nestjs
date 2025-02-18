@@ -49,12 +49,7 @@ export class UserRepository extends EntityRepository<User> {
   }
 
   findOneByIdWithPerfume(id: number) {
-    const user = this.em
-      .createQueryBuilder(User, 'u')
-      .select(['*'])
-      .leftJoin('perfume', 'p', { 'u.perfumeId = p.id': true })
-      .where({ id })
-      .getSingleResult();
+    const user = this.findOne({ id }, { fields: ['*', 'perfumes'] });
 
     return user;
   }

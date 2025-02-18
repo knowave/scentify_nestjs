@@ -1,6 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserRepository } from './user.repository';
-import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { EXIST_EMAIL } from './error/user.error';
 import * as bcrypt from 'bcrypt';
@@ -28,10 +27,7 @@ export class UserService {
     return await this.userRepository.findOneByEmailWithValidation(email);
   }
 
-  async createUser(
-    createUserDto: CreateUserDto,
-    isAdmin?: boolean,
-  ): Promise<void> {
+  async createUser(createUserDto: CreateUserDto, isAdmin?: boolean) {
     const { email, password, username, nickname, phoneNumber } = createUserDto;
     const existEmail = await this.userRepository.findOneByEmail(email);
 
@@ -51,10 +47,7 @@ export class UserService {
     return;
   }
 
-  async updateUser(
-    userId: number,
-    updateUserDto: UpdateUserDto,
-  ): Promise<void> {
+  async updateUser(userId: number, updateUserDto: UpdateUserDto) {
     let profileImage: string;
     const {
       email,
@@ -94,7 +87,7 @@ export class UserService {
     await this.userRepository.upsert(user);
   }
 
-  async deleteUser(userId: number): Promise<void> {
+  async deleteUser(userId: number) {
     const user = await this.userRepository.findOneById(userId);
 
     await this.userRepository.upsert({
@@ -104,7 +97,7 @@ export class UserService {
     });
   }
 
-  async restoreDeletedUser(userId: number): Promise<void> {
+  async restoreDeletedUser(userId: number) {
     const user =
       await this.userRepository.findOneByIdAndDeletedWithThirtyDays(userId);
 
@@ -113,7 +106,7 @@ export class UserService {
     await this.userRepository.upsert(user);
   }
 
-  async myProfile(userId: number): Promise<User> {
+  async myProfile(userId: number) {
     return await this.userRepository.findOneByIdWithPerfume(userId);
   }
 

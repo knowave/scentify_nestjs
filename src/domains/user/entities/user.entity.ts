@@ -1,7 +1,8 @@
-import { Entity, Enum, Property } from '@mikro-orm/core';
+import { Cascade, Entity, Enum, OneToMany, Property } from '@mikro-orm/core';
 import { BaseEntity } from 'src/common/base.entity';
 import { Role } from 'src/common/enums/role.enum';
 import { SocialLoginType } from 'src/domains/auth/enums/social-login-type.enum';
+import { Perfume } from 'src/domains/perfume/entities/perfume.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -72,6 +73,8 @@ export class User extends BaseEntity {
   @Property({ type: 'boolean', default: false, comment: '탈퇴여부' })
   isDeleted: boolean;
 
-  @Property({ type: 'integer', nullable: true, comment: '향수 고유값' })
-  perfumeId: number;
+  @OneToMany(() => Perfume, (perfume) => perfume.user, {
+    cascade: [Cascade.REMOVE],
+  })
+  perfumes: Perfume[];
 }

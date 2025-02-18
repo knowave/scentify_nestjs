@@ -79,7 +79,7 @@ export class PerfumeService {
       await this.perfumeRepository.findPerfumeRecommend(recommendPerfumeDto);
 
     if (recommendPerfume) {
-      user.perfumeId = recommendPerfume.id;
+      user.perfumes.push(recommendPerfume);
       await this.userRepository.upsert(user);
     }
 
