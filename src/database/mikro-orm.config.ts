@@ -18,6 +18,7 @@ export const ormConfig: Options<PostgreSqlDriver> = {
   password: DATABASE_PASSWORD,
   entities: ['./dist/domains/**/entities/**.entity.js'],
   entitiesTs: ['./src/domains/**/entities/**.entity.ts'],
+  driver: PostgreSqlDriver,
   migrations: {
     path: './dist/database/migrations',
     pathTs: './src/database/migrations',
