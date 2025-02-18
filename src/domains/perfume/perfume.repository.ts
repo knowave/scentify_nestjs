@@ -10,13 +10,12 @@ export class PerfumeRepository extends EntityRepository<Perfume> {
     super(em, Perfume);
   }
 
-  findManyByName(names: string[]): Promise<Perfume[]> {
-    return this.find({ name: { $in: names } });
+  findManyByName(names: string[]) {
+    const entityManager = this.em.fork();
+    return entityManager.find(Perfume, { name: { $in: names } });
   }
 
-  findPerfumeRecommend(
-    recommendPerfumeDto: RecommendPerfumeDto,
-  ): Promise<Perfume> {
+  findPerfumeRecommend(recommendPerfumeDto: RecommendPerfumeDto) {
     const qb = this.em.createQueryBuilder(Perfume, 'perfume');
 
     switch (recommendPerfumeDto) {
@@ -47,5 +46,9 @@ export class PerfumeRepository extends EntityRepository<Perfume> {
     }
 
     return qb.getSingleResult();
+  }
+
+  async bulkSave(perfumes: Perfume[]) {
+    await this.em.persistAndFlush(perfumes);
   }
 }

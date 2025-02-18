@@ -17,9 +17,10 @@ export class PerfumeService {
     private readonly s3Service: S3Service,
   ) {}
 
-  async createPerfumes(createPerfumesDto: CreatePerfumeDto[]): Promise<void> {
+  async createPerfumes(createPerfumesDto: CreatePerfumeDto[]) {
     const perfumes: Perfume[] = [];
-    await this.validatePerfume(createPerfumesDto.map((dto) => dto.name));
+    const perfumeNames = createPerfumesDto.map((dto) => dto.name);
+    await this.validatePerfume(perfumeNames);
 
     for (const {
       name,
@@ -68,13 +69,10 @@ export class PerfumeService {
       perfumes.push(createPerfume);
     }
 
-    await this.perfumeRepository.insert(perfumes);
+    await this.perfumeRepository.bulkSave(perfumes);
   }
 
-  async recommendPerfume(
-    user: User,
-    recommendPerfumeDto: RecommendPerfumeDto,
-  ): Promise<Perfume> {
+  async recommendPerfume(user: User, recommendPerfumeDto: RecommendPerfumeDto) {
     const recommendPerfume =
       await this.perfumeRepository.findPerfumeRecommend(recommendPerfumeDto);
 
