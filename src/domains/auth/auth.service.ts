@@ -23,21 +23,18 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateUser(email: string, password: string): Promise<User> {
+  async validateUser(email: string, password: string) {
     const user = await this.userRepository.findOneByEmailWithValidation(email);
 
     await this.verifyPassword(password, user.password);
 
-    delete user.password;
     return user;
   }
 
-  async validateNaver(naverId: string): Promise<User> {
+  async validateNaver(naverId: string) {
     const user = await this.userRepository.findOne({
-      where: {
-        socialId: naverId,
-        socialLoginType: SocialLoginType.NAVER,
-      },
+      socialId: naverId,
+      socialLoginType: SocialLoginType.NAVER,
     });
 
     if (!user) return null;
@@ -47,10 +44,8 @@ export class AuthService {
 
   async validateKakao(kakaoId: string): Promise<User> {
     const user = await this.userRepository.findOne({
-      where: {
-        socialId: kakaoId,
-        socialLoginType: SocialLoginType.KAKAO,
-      },
+      socialId: kakaoId,
+      socialLoginType: SocialLoginType.KAKAO,
     });
 
     if (!user) return null;
@@ -60,10 +55,8 @@ export class AuthService {
 
   async validateGoogle(googleId: string): Promise<User> {
     const user = await this.userRepository.findOne({
-      where: {
-        socialId: googleId,
-        socialLoginType: SocialLoginType.GOOGLE,
-      },
+      socialId: googleId,
+      socialLoginType: SocialLoginType.GOOGLE,
     });
 
     if (!user) return null;
@@ -75,37 +68,39 @@ export class AuthService {
     const user = await this.userRepository.findOneByEmailWithValidation(email);
     await this.verifyPassword(password, user.password);
 
-    const accessToken = this.createAccessToken(user);
-    const refreshToken = this.createRefreshToken(user);
+    const accessToken = this.createAccessToken(user as User);
+    const refreshToken = this.createRefreshToken(user as User);
 
     user.token = refreshToken;
-    await this.userRepository.save(user);
+    await this.userRepository.upsert(user);
 
     return { accessToken, refreshToken };
   }
 
   async logout(user: User): Promise<void> {
     user.token = null;
-    await this.userRepository.save(user);
+    await this.userRepository.upsert(user);
   }
 
   async socialLogin(socialLoginDto: SocialLoginDto): Promise<LoginResponseDto> {
     const { socialId, email, type } = socialLoginDto;
     const naverUniqueValue = `${this.filteredSocialLoginType(type)}-${uuid()}`;
 
-    const user = await this.userRepository.save(
-      this.userRepository.create({
-        email,
-        username: naverUniqueValue,
-        socialId: socialId,
-        socialLoginType: this.filteredSocialLoginType(type),
-      }),
-    );
+    const createUser: User = this.userRepository.create({
+      email,
+      username: naverUniqueValue,
+      socialId: socialId,
+      socialLoginType: this.filteredSocialLoginType(type),
+    });
 
-    const accessToken = this.createAccessToken(user);
-    const refreshToken = this.createRefreshToken(user);
+    const userId = await this.userRepository.insert(createUser);
+    const user = await this.userRepository.findOneById(userId);
+
+    const accessToken = this.createAccessToken(user as User);
+    const refreshToken = this.createRefreshToken(user as User);
+
     user.token = accessToken;
-    await this.userRepository.save(user);
+    await this.userRepository.upsert(user);
 
     return { accessToken, refreshToken, user };
   }
