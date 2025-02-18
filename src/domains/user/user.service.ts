@@ -20,11 +20,11 @@ export class UserService {
     this.salt = 10;
   }
 
-  async getUserById(id: number): Promise<User> {
+  async getUserById(id: number) {
     return await this.userRepository.findOneById(id);
   }
 
-  async getUserByEmail(email: string): Promise<User> {
+  async getUserByEmail(email: string) {
     return await this.userRepository.findOneByEmailWithValidation(email);
   }
 
@@ -35,10 +35,9 @@ export class UserService {
     const { email, password, username, nickname, phoneNumber } = createUserDto;
     const existEmail = await this.userRepository.findOneByEmail(email);
 
-    // 더블 체크
     if (existEmail) throw new BadRequestException(EXIST_EMAIL);
 
-    await this.userRepository.save(
+    await this.userRepository.insert(
       this.userRepository.create({
         email,
         password: await this.hashPassword(password),
@@ -48,6 +47,7 @@ export class UserService {
         role: isAdmin ? Role.ADMIN : Role.USER,
       }),
     );
+
     return;
   }
 
@@ -91,15 +91,16 @@ export class UserService {
       user.profileImage = profileImage;
     }
 
-    await this.userRepository.save(user);
+    await this.userRepository.upsert(user);
   }
 
   async deleteUser(userId: number): Promise<void> {
     const user = await this.userRepository.findOneById(userId);
 
-    await this.userRepository.softDelete({
+    await this.userRepository.upsert({
       id: user.id,
       isDeleted: true,
+      deletedAt: new Date(),
     });
   }
 
@@ -109,7 +110,7 @@ export class UserService {
 
     user.deletedAt = null;
     user.isDeleted = false;
-    await this.userRepository.save(user);
+    await this.userRepository.upsert(user);
   }
 
   async myProfile(userId: number): Promise<User> {

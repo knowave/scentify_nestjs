@@ -1,20 +1,20 @@
+import { Entity, Enum, Property } from '@mikro-orm/core';
 import { BaseEntity } from 'src/common/base.entity';
 import { Role } from 'src/common/enums/role.enum';
 import { SocialLoginType } from 'src/domains/auth/enums/social-login-type.enum';
-import { Column, Entity } from 'typeorm';
 
 @Entity()
 export class User extends BaseEntity {
-  @Column({ type: 'varchar', unique: true, comment: '사용자 이메일' })
+  @Property({ type: 'varchar', unique: true, comment: '사용자 이메일' })
   email: string;
 
-  @Column({ type: 'varchar', comment: '사용자 이름' })
+  @Property({ type: 'varchar', comment: '사용자 이름' })
   username: string;
 
-  @Column({ type: 'varchar', nullable: true, comment: '사용자 닉네임' })
+  @Property({ type: 'varchar', nullable: true, comment: '사용자 닉네임' })
   nickname: string;
 
-  @Column({
+  @Property({
     type: 'varchar',
     unique: true,
     nullable: true,
@@ -22,27 +22,26 @@ export class User extends BaseEntity {
   })
   socialId: string;
 
-  @Column({
-    type: 'enum',
-    enum: SocialLoginType,
+  @Enum({
+    items: () => SocialLoginType,
     nullable: true,
     comment: '소셜 로그인 타입 (NAVER, KAKAO, GOOGLE)',
   })
   socialLoginType: SocialLoginType;
 
-  @Column({
+  @Property({
     type: 'varchar',
     length: 128,
     comment: '사용자 비밀번호',
     nullable: true,
-    select: false,
+    hidden: false,
   })
   password: string;
 
-  @Column({ type: 'varchar', nullable: true, comment: '사용자 전화번호' })
+  @Property({ type: 'varchar', nullable: true, comment: '사용자 전화번호' })
   phoneNumber: string;
 
-  @Column({
+  @Property({
     type: 'varchar',
     length: 255,
     nullable: true,
@@ -50,7 +49,7 @@ export class User extends BaseEntity {
   })
   profileImage: string;
 
-  @Column({
+  @Property({
     type: 'varchar',
     length: 100,
     nullable: true,
@@ -58,21 +57,21 @@ export class User extends BaseEntity {
   })
   introduction: string;
 
-  @Column({ type: 'enum', enum: Role, default: Role.USER })
+  @Enum({ items: () => Role, default: Role.USER })
   role: Role;
 
-  @Column({
+  @Property({
     type: 'varchar',
     length: 512,
     nullable: true,
     comment: '사용자 토큰',
-    select: false,
+    hidden: true,
   })
   token: string;
 
-  @Column({ type: 'boolean', default: false, comment: '탈퇴여부' })
+  @Property({ type: 'boolean', default: false, comment: '탈퇴여부' })
   isDeleted: boolean;
 
-  @Column('integer', { nullable: true, comment: '향수 고유값' })
+  @Property({ type: 'integer', nullable: true, comment: '향수 고유값' })
   perfumeId: number;
 }

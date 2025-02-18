@@ -68,7 +68,7 @@ export class PerfumeService {
       perfumes.push(createPerfume);
     }
 
-    await this.perfumeRepository.save(perfumes);
+    await this.perfumeRepository.insert(perfumes);
   }
 
   async recommendPerfume(
@@ -80,7 +80,7 @@ export class PerfumeService {
 
     if (recommendPerfume) {
       user.perfumeId = recommendPerfume.id;
-      await this.userRepository.save(user);
+      await this.userRepository.upsert(user);
     }
 
     return recommendPerfume;

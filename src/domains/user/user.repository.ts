@@ -1,70 +1,60 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { NOT_FOUND_DELETED_USER, NOT_FOUND_USER } from './error/user.error';
-import { Perfume } from '../perfume/entities/perfume.entity';
-
+import { EntityRepository } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/postgresql';
 @Injectable()
-export class UserRepository extends Repository<User> {
-  constructor(private readonly dataSource: DataSource) {
-    super(User, dataSource.createEntityManager());
+export class UserRepository extends EntityRepository<User> {
+  constructor(protected readonly em: EntityManager) {
+    super(em, User);
   }
 
-  async findOneById(id: number): Promise<User> {
-    const user = await this.createQueryBuilder('user')
-      .where('user.id = :id', { id })
-      .getOne();
+  findOneById(id: number) {
+    const user = this.findOne({ id });
 
     if (!user) throw new NotFoundException(NOT_FOUND_USER);
 
     return user;
   }
 
-  async findOneByEmailWithValidation(email: string): Promise<User> {
-    const user = await this.createQueryBuilder('user')
-      .addSelect('user.password')
-      .where('user.email = :email', { email })
-      .getOne();
+  findOneByEmailWithValidation(email: string) {
+    const user = this.findOne({ email }, { fields: ['*', 'password'] });
 
     if (!user) throw new NotFoundException(NOT_FOUND_USER);
 
     return user;
   }
 
-  async findOneByEmail(email: string): Promise<User> {
-    const user = await this.createQueryBuilder('user')
-      .where('user.email = :email', { email })
-      .getOne();
+  async findOneByEmail(email: string) {
+    const user = await this.findOne({ email });
 
     return user;
   }
 
-  async findOneByIdAndDeletedWithThirtyDays(userId: number): Promise<User> {
+  findOneByIdAndDeletedWithThirtyDays(userId: number) {
     const date = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    const deletedUser = await this.createQueryBuilder('user')
-      .withDeleted()
-      .where('user.id = :userId', {
-        userId,
-      })
-      .andWhere('user.deletedAt IS NOT NULL')
-      .andWhere('user.isDeleted = true')
-      .andWhere('user.deletedAt >= DATE(:date)', {
-        date,
-      })
-      .getOne();
+
+    const deletedUser = this.findOne(
+      {
+        id: userId,
+        deletedAt: { $gte: date },
+        isDeleted: true,
+      },
+      { filters: false },
+    );
 
     if (!deletedUser) throw new NotFoundException(NOT_FOUND_DELETED_USER);
 
-    return;
+    return deletedUser;
   }
 
-  async findOneByIdWithPerfume(id: number): Promise<User> {
-    const user = await this.createQueryBuilder('user')
-      .leftJoin(Perfume, 'perfume', 'user.perfumeId = perfume.id')
-      .where('user.id = :id', { id })
-      .getOne();
-
-    if (!user) throw new NotFoundException(NOT_FOUND_USER);
+  findOneByIdWithPerfume(id: number) {
+    const user = this.em
+      .createQueryBuilder(User, 'u')
+      .select(['*'])
+      .leftJoin('perfume', 'p', { 'u.perfumeId = p.id': true })
+      .where({ id })
+      .getSingleResult();
 
     return user;
   }

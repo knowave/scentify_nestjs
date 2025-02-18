@@ -1,28 +1,28 @@
 import {
-  BeforeInsert,
-  BeforeSoftRemove,
+  BeforeCreate,
+  BeforeDelete,
   BeforeUpdate,
-  CreateDateColumn,
-  DeleteDateColumn,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+  Filter,
+  PrimaryKey,
+  Property,
+} from '@mikro-orm/core';
 
+@Filter({ name: 'softDelete', cond: { deletedAt: null } })
 export class BaseEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryKey({ type: 'int' })
   id: number;
 
-  @CreateDateColumn()
+  @Property({ type: 'date' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @Property({ type: 'date' })
   updatedAt: Date;
 
-  @DeleteDateColumn()
+  @Property({ type: 'date', nullable: true })
   deletedAt: Date;
 
-  @BeforeInsert()
-  protected beforeInsert() {
+  @BeforeCreate()
+  protected beforeCreate() {
     this.createdAt = new Date();
     this.updatedAt = new Date();
   }
@@ -32,8 +32,8 @@ export class BaseEntity {
     this.updatedAt = new Date();
   }
 
-  @BeforeSoftRemove()
-  protected beforeSoftRemove() {
+  @BeforeDelete()
+  protected beforeDelete() {
     this.deletedAt = new Date();
   }
 }
