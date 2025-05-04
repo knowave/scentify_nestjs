@@ -8,17 +8,17 @@ import { JwtAuthGuard } from './domains/auth/guards/jwt.guard';
 import { PostgresqlModule } from './database/postgresql.module';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-      envFilePath: '.env',
-    }),
-    PostgresqlModule,
-    UserModule,
-    PerfumeModule,
-    AuthModule,
-  ],
-  controllers: [],
-  providers: [{ provide: APP_GUARD, useClass: JwtAuthGuard }],
+    imports: [
+        ConfigModule.forRoot({
+            isGlobal: true,
+            envFilePath: '.env'
+        }),
+        PostgresqlModule,
+        UserModule,
+        PerfumeModule,
+        AuthModule
+    ],
+    controllers: [],
+    providers: [{ provide: APP_GUARD, useClass: JwtAuthGuard }]
 })
 export class AppModule {}

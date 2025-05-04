@@ -1,5 +1,5 @@
 export class SocialLoginDto {
-  socialId: string;
-  email: string;
-  type: string;
+    socialId: string;
+    email: string;
+    type: string;
 }

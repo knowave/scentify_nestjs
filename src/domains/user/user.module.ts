@@ -7,9 +7,9 @@ import { S3Module } from '../s3/s3.module';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 
 @Module({
-  imports: [MikroOrmModule.forFeature([User]), S3Module],
-  providers: [UserService, UserRepository],
-  controllers: [UserController],
-  exports: [UserService, UserRepository],
+    imports: [MikroOrmModule.forFeature([User]), S3Module],
+    providers: [UserService, UserRepository],
+    controllers: [UserController],
+    exports: [UserService, UserRepository]
 })
 export class UserModule {}

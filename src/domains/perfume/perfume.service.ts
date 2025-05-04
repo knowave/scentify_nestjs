@@ -11,88 +11,81 @@ import { UserRepository } from '../user/user.repository';
 
 @Injectable()
 export class PerfumeService {
-  constructor(
-    private readonly perfumeRepository: PerfumeRepository,
-    private readonly userRepository: UserRepository,
-    private readonly s3Service: S3Service,
-  ) {}
+    constructor(
+        private readonly perfumeRepository: PerfumeRepository,
+        private readonly userRepository: UserRepository,
+        private readonly s3Service: S3Service
+    ) {}
 
-  async createPerfumes(createPerfumesDto: CreatePerfumeDto[]) {
-    const perfumes: Perfume[] = [];
-    const perfumeNames = createPerfumesDto.map((dto) => dto.name);
-    await this.validatePerfume(perfumeNames);
+    async createPerfumes(createPerfumesDto: CreatePerfumeDto[]) {
+        const perfumes: Perfume[] = [];
+        const perfumeNames = createPerfumesDto.map(dto => dto.name);
+        await this.validatePerfume(perfumeNames);
 
-    for (const {
-      name,
-      brand,
-      description,
-      price,
-      intensity,
-      mood,
-      longevity,
-      gender,
-      season,
-      scents,
-      image,
-    } of createPerfumesDto) {
-      let imageUrl: string;
+        for (const {
+            name,
+            brand,
+            description,
+            price,
+            intensity,
+            mood,
+            longevity,
+            gender,
+            season,
+            scents,
+            image
+        } of createPerfumesDto) {
+            let imageUrl: string;
 
-      if (image) {
-        const { fileName, mimeType, fileContent } = image;
-        const newFileName = `${uuid()}-${fileName}`;
+            if (image) {
+                const { fileName, mimeType, fileContent } = image;
+                const newFileName = `${uuid()}-${fileName}`;
 
-        const uploadFile = await this.s3Service.uploadObject(
-          newFileName,
-          fileContent,
-          mimeType,
-        );
+                const uploadFile = await this.s3Service.uploadObject(newFileName, fileContent, mimeType);
 
-        imageUrl = uploadFile.Key;
-      }
+                imageUrl = uploadFile.Key;
+            }
 
-      const createPerfume = this.perfumeRepository.create({
-        name,
-        brand,
-        description,
-        price,
-        intensity,
-        mood,
-        longevity,
-        gender,
-        season,
-        scents,
-        imageUrl: imageUrl
-          ? imageUrl
-          : 'https://example.com/images/ocean-breeze.jpg',
-      });
+            const createPerfume = this.perfumeRepository.create({
+                name,
+                brand,
+                description,
+                price,
+                intensity,
+                mood,
+                longevity,
+                gender,
+                season,
+                scents,
+                imageUrl: imageUrl ? imageUrl : 'https://example.com/images/ocean-breeze.jpg'
+            });
 
-      perfumes.push(createPerfume);
+            perfumes.push(createPerfume);
+        }
+
+        await this.perfumeRepository.bulkSave(perfumes);
     }
 
-    await this.perfumeRepository.bulkSave(perfumes);
-  }
+    async recommendPerfume(user: User, recommendPerfumeDto: RecommendPerfumeDto) {
+        const recommendPerfume = await this.perfumeRepository.findPerfumeRecommend(recommendPerfumeDto);
 
-  async recommendPerfume(user: User, recommendPerfumeDto: RecommendPerfumeDto) {
-    const recommendPerfume =
-      await this.perfumeRepository.findPerfumeRecommend(recommendPerfumeDto);
+        if (recommendPerfume) {
+            user.perfumes.push(recommendPerfume);
+            await this.userRepository.upsert(user);
+        }
 
-    if (recommendPerfume) {
-      user.perfumes.push(recommendPerfume);
-      await this.userRepository.upsert(user);
+        return recommendPerfume;
     }
 
-    return recommendPerfume;
-  }
+    private async validatePerfume(names: string[]) {
+        const perfumes = await this.perfumeRepository.findManyByName(names);
 
-  private async validatePerfume(names: string[]) {
-    const perfumes = await this.perfumeRepository.findManyByName(names);
+        if (perfumes && perfumes.length > 0) {
+            const existNames = perfumes.map(perfume => perfume.name);
 
-    if (perfumes && perfumes.length > 0) {
-      const existNames = perfumes.map((perfume) => perfume.name);
+            throw new BadRequestException(EXIST_PERFUME(existNames.join(', ')));
+        }
 
-      throw new BadRequestException(EXIST_PERFUME(existNames.join(', ')));
+        return null;
     }
-
-    return null;
-  }
 }

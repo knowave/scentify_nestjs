@@ -9,13 +9,8 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
-  imports: [
-    MikroOrmModule.forFeature([Perfume]),
-    S3Module,
-    UserModule,
-    ScheduleModule.forRoot(),
-  ],
-  providers: [PerfumeService, PerfumeRepository],
-  controllers: [PerfumeController],
+    imports: [MikroOrmModule.forFeature([Perfume]), S3Module, UserModule, ScheduleModule.forRoot()],
+    providers: [PerfumeService, PerfumeRepository],
+    controllers: [PerfumeController]
 })
 export class PerfumeModule {}

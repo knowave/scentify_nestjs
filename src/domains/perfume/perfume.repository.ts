@@ -6,49 +6,49 @@ import { EntityManager } from '@mikro-orm/postgresql';
 
 @Injectable()
 export class PerfumeRepository extends EntityRepository<Perfume> {
-  constructor(protected readonly em: EntityManager) {
-    super(em, Perfume);
-  }
-
-  findManyByName(names: string[]) {
-    const entityManager = this.em.fork();
-    return entityManager.find(Perfume, { name: { $in: names } });
-  }
-
-  findPerfumeRecommend(recommendPerfumeDto: RecommendPerfumeDto) {
-    const qb = this.em.createQueryBuilder(Perfume, 'perfume');
-
-    switch (recommendPerfumeDto) {
-      case recommendPerfumeDto.mood:
-        qb.andWhere({ mood: recommendPerfumeDto.mood });
-        break;
-      case recommendPerfumeDto.intensity:
-        qb.andWhere({ intensity: recommendPerfumeDto.intensity });
-        break;
-      case recommendPerfumeDto.longevity:
-        qb.andWhere({ longevity: recommendPerfumeDto.longevity });
-        break;
-      case recommendPerfumeDto.season:
-        qb.andWhere({ season: { $in: recommendPerfumeDto.season } });
-        break;
-      case recommendPerfumeDto.scents:
-        qb.andWhere({ scents: { $in: recommendPerfumeDto.scents } });
-        break;
-      case recommendPerfumeDto.priceRange:
-        qb.andWhere({ price: { $between: recommendPerfumeDto.priceRange } });
-        break;
-      case recommendPerfumeDto.brand:
-        qb.andWhere({ brand: recommendPerfumeDto.brand });
-        break;
-      case recommendPerfumeDto.gender:
-        qb.andWhere({ gender: recommendPerfumeDto.gender });
-        break;
+    constructor(protected readonly em: EntityManager) {
+        super(em, Perfume);
     }
 
-    return qb.getSingleResult();
-  }
+    findManyByName(names: string[]) {
+        const entityManager = this.em.fork();
+        return entityManager.find(Perfume, { name: { $in: names } });
+    }
 
-  async bulkSave(perfumes: Perfume[]) {
-    await this.em.persistAndFlush(perfumes);
-  }
+    findPerfumeRecommend(recommendPerfumeDto: RecommendPerfumeDto) {
+        const qb = this.em.createQueryBuilder(Perfume, 'perfume');
+
+        switch (recommendPerfumeDto) {
+            case recommendPerfumeDto.mood:
+                qb.andWhere({ mood: recommendPerfumeDto.mood });
+                break;
+            case recommendPerfumeDto.intensity:
+                qb.andWhere({ intensity: recommendPerfumeDto.intensity });
+                break;
+            case recommendPerfumeDto.longevity:
+                qb.andWhere({ longevity: recommendPerfumeDto.longevity });
+                break;
+            case recommendPerfumeDto.season:
+                qb.andWhere({ season: { $in: recommendPerfumeDto.season } });
+                break;
+            case recommendPerfumeDto.scents:
+                qb.andWhere({ scents: { $in: recommendPerfumeDto.scents } });
+                break;
+            case recommendPerfumeDto.priceRange:
+                qb.andWhere({ price: { $between: recommendPerfumeDto.priceRange } });
+                break;
+            case recommendPerfumeDto.brand:
+                qb.andWhere({ brand: recommendPerfumeDto.brand });
+                break;
+            case recommendPerfumeDto.gender:
+                qb.andWhere({ gender: recommendPerfumeDto.gender });
+                break;
+        }
+
+        return qb.getSingleResult();
+    }
+
+    async bulkSave(perfumes: Perfume[]) {
+        await this.em.persistAndFlush(perfumes);
+    }
 }

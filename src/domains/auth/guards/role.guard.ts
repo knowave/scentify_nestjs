@@ -6,24 +6,19 @@ import { Role } from 'src/common/enums/role.enum';
 
 @Injectable()
 export class RoleGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
+    constructor(private reflector: Reflector) {}
 
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
-    const requireRole = this.reflector.get<Role[]>(
-      ROLES_KEY,
-      context.getHandler(),
-    );
+    canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+        const requireRole = this.reflector.get<Role[]>(ROLES_KEY, context.getHandler());
 
-    if (!requireRole) return true;
+        if (!requireRole) return true;
 
-    const req = context.switchToHttp().getRequest();
-    const user = req.user;
+        const req = context.switchToHttp().getRequest();
+        const user = req.user;
 
-    if (!user) return false;
+        if (!user) return false;
 
-    const userRole = user.role;
-    return requireRole.includes(userRole);
-  }
+        const userRole = user.role;
+        return requireRole.includes(userRole);
+    }
 }
