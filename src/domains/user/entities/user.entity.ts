@@ -1,7 +1,5 @@
-import { Cascade, Entity, Enum, OneToMany, Property } from '@mikro-orm/core';
+import { Cascade, Entity, OneToMany, Property } from '@mikro-orm/core';
 import { BaseEntity } from 'src/common/base.entity';
-import { Role } from 'src/common/enums/role.enum';
-import { SocialLoginType } from 'src/domains/auth/enums/social-login-type.enum';
 import { Perfume } from 'src/domains/perfume/entities/perfume.entity';
 
 @Entity()
@@ -23,12 +21,8 @@ export class User extends BaseEntity {
     })
     socialId: string;
 
-    @Enum({
-        items: () => SocialLoginType,
-        nullable: true,
-        comment: '소셜 로그인 타입 (NAVER, KAKAO, GOOGLE)'
-    })
-    socialLoginType: SocialLoginType;
+    @Property({ nullable: true, comment: '소셜 로그인 타입 (NAVER, KAKAO, GOOGLE)' })
+    socialLoginType: string;
 
     @Property({
         type: 'varchar',
@@ -58,8 +52,8 @@ export class User extends BaseEntity {
     })
     introduction: string;
 
-    @Enum({ items: () => Role, default: Role.USER })
-    role: Role;
+    @Property()
+    role: string;
 
     @Property({
         type: 'varchar',
