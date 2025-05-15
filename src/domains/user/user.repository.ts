@@ -1,5 +1,24 @@
-// import { EntityManager } from '@mikro-orm/postgresql';
-// import { Injectable } from '@nestjs/common';
+import { EntityManager, EntityRepository } from '@mikro-orm/postgresql';
+import { Injectable } from '@nestjs/common';
+import { User } from './entities/user.entity';
+import { SaveUserType } from './types/save.type';
 
-// @Injectable()
-// export class UserRepository extends EntityManager<> {}
+@Injectable()
+export class UserRepository extends EntityRepository<User> {
+    constructor(protected readonly em: EntityManager) {
+        super(em, User);
+    }
+
+    findUserById(id: number) {
+        return this.findOne({ id });
+    }
+
+    findUserByEmail(email: string) {
+        return this.findOne({ email });
+    }
+
+    async save(user: SaveUserType) {
+        const createUser = this.create(user);
+        return await this.em.persistAndFlush(createUser);
+    }
+}
