@@ -30,4 +30,11 @@ export class UserRepository extends EntityRepository<User> {
         user.isDeleted = true;
         return await this.em.persistAndFlush(user);
     }
+
+    async findUserByIdWithPerfume(id: number) {
+        return this.createQueryBuilder('user')
+            .leftJoinAndSelect('user.perfumes', 'perfumes')
+            .where('user.id = ?', [id])
+            .execute('get');
+    }
 }

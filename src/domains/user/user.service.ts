@@ -5,12 +5,13 @@ import { CustomException } from 'src/utils/custom-excaption';
 import { NOT_FOUND } from 'src/common/error/not-found.error';
 import { plainToInstance } from 'class-transformer';
 import { User } from './entities/user.entity';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserBody } from './dto/request/create-user.req';
 import { BAD_REQUEST } from 'src/common/error/bad-request.error';
 import { ROLE } from 'src/common/enum/role.enum';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserBody } from './dto/request/update-user.req';
 import * as bcrypt from 'bcryptjs';
 import { SALT_ROUNDS } from 'src/common/config/env';
+import { GetUserByIdWithPerfume } from './dto/response/get-user-by-id-with-perfume.res';
 
 @Injectable()
 export class UserService implements UserServiceInterface {
@@ -24,7 +25,7 @@ export class UserService implements UserServiceInterface {
         return plainToInstance(User, <User>user);
     }
 
-    async createUser({ email, password, username, nickname, phoneNumber }: CreateUserDto) {
+    async createUser({ email, password, username, nickname, phoneNumber }: CreateUserBody) {
         const existEmail = await this.repository.findUserByEmail(email);
 
         if (existEmail) throw new CustomException(BAD_REQUEST.EMAIL_ALREADY_EXIST);
@@ -37,7 +38,7 @@ export class UserService implements UserServiceInterface {
         updateUserDto: { email, password, username, nickname, phoneNumber, profileImage, introduction }
     }: {
         id: number;
-        updateUserDto: UpdateUserDto;
+        updateUserDto: UpdateUserBody;
     }): Promise<void> {
         const user = await this.getUserById(id);
 
@@ -55,6 +56,14 @@ export class UserService implements UserServiceInterface {
     async deleteUser(id: number) {
         const user = await this.getUserById(id);
         await this.repository.softDelete(user);
+    }
+
+    async getUserByIdWithPerfume(id: number) {
+        const user = await this.repository.findUserByIdWithPerfume(id);
+
+        if (!user) throw new CustomException(NOT_FOUND.USER);
+
+        return plainToInstance(GetUserByIdWithPerfume, <GetUserByIdWithPerfume>user);
     }
 
     private async hashPassword(password: string): Promise<string> {

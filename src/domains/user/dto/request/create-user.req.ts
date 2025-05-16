@@ -1,7 +1,7 @@
 import { IsEmail, IsNotEmpty, IsString, MinLength, MaxLength, Matches } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateUserDto {
+export class CreateUserBody {
     @IsEmail({}, { message: '유효한 이메일 주소를 입력하세요.' })
     @IsNotEmpty({ message: '이메일을 입력하세요.' })
     @ApiProperty({ description: '이메일' })

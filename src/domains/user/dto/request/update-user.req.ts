@@ -1,8 +1,8 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { CreateUserDto } from './create-user.dto';
+import { CreateUserBody } from './create-user.req';
 import { IsOptional, IsString } from 'class-validator';
 
-export class UpdateUserDto extends PartialType(CreateUserDto) {
+export class UpdateUserBody extends PartialType(CreateUserBody) {
     @IsString()
     @IsOptional()
     @ApiProperty({ required: false, description: 'profile image url' })
