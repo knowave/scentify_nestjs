@@ -21,4 +21,13 @@ export class UserRepository extends EntityRepository<User> {
         const createUser = this.create(user);
         return await this.em.persistAndFlush(createUser);
     }
+
+    async update(user: User) {
+        return await this.em.persistAndFlush(user);
+    }
+
+    async softDelete(user: User) {
+        user.isDeleted = true;
+        return await this.em.persistAndFlush(user);
+    }
 }

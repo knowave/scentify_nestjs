@@ -8,6 +8,9 @@ import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { BAD_REQUEST } from 'src/common/error/bad-request.error';
 import { ROLE } from 'src/common/enum/role.enum';
+import { UpdateUserDto } from './dto/update-user.dto';
+import * as bcrypt from 'bcryptjs';
+import { SALT_ROUNDS } from 'src/common/config/env';
 
 @Injectable()
 export class UserService implements UserServiceInterface {
@@ -26,13 +29,35 @@ export class UserService implements UserServiceInterface {
 
         if (existEmail) throw new CustomException(BAD_REQUEST.EMAIL_ALREADY_EXIST);
 
-        await this.repository.save({
-            email,
-            password,
-            username,
-            nickname,
-            phoneNumber,
-            role: ROLE.USER
-        });
+        await this.repository.save({ email, password, username, nickname, phoneNumber, role: ROLE.USER });
+    }
+
+    async updateUser({
+        id,
+        updateUserDto: { email, password, username, nickname, phoneNumber, profileImage, introduction }
+    }: {
+        id: number;
+        updateUserDto: UpdateUserDto;
+    }): Promise<void> {
+        const user = await this.getUserById(id);
+
+        if (email) user.email = email;
+        if (password) user.password = await this.hashPassword(password);
+        if (username) user.username = username;
+        if (nickname) user.nickname = nickname;
+        if (phoneNumber) user.phoneNumber = phoneNumber;
+        if (profileImage) user.profileImage = profileImage;
+        if (introduction) user.introduction = introduction;
+
+        await this.repository.update(user);
+    }
+
+    async deleteUser(id: number) {
+        const user = await this.getUserById(id);
+        await this.repository.softDelete(user);
+    }
+
+    private async hashPassword(password: string): Promise<string> {
+        return await bcrypt.hash(password, SALT_ROUNDS);
     }
 }
