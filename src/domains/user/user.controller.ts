@@ -48,4 +48,10 @@ export class UserController {
     async getMyProfile(@CurrentUser() { id }: CurrentUserType) {
         return this.service.getUserByIdWithPerfume(id);
     }
+
+    @ApiOperation({ summary: '회원탈퇴 후 30일이 지나지 않은 사용자 회원탈퇴 취소' })
+    @Patch('/restore-user')
+    async restoreUser(@CurrentUser() { id }: CurrentUserType) {
+        return this.service.restoreUser(id);
+    }
 }

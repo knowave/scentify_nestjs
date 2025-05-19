@@ -66,6 +66,17 @@ export class UserService implements UserServiceInterface {
         return plainToInstance(GetUserByIdWithPerfume, <GetUserByIdWithPerfume>user);
     }
 
+    async restoreUser(id: number) {
+        const user = await this.repository.findUserByIdAndThirtyDays(id);
+
+        if (!user) throw new CustomException(NOT_FOUND.USER);
+
+        user.isDeleted = false;
+        user.deletedAt = null;
+
+        await this.repository.update(user);
+    }
+
     private async hashPassword(password: string): Promise<string> {
         return await bcrypt.hash(password, SALT_ROUNDS);
     }

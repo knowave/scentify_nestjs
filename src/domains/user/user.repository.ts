@@ -31,10 +31,16 @@ export class UserRepository extends EntityRepository<User> {
         return await this.em.persistAndFlush(user);
     }
 
-    async findUserByIdWithPerfume(id: number) {
+    findUserByIdWithPerfume(id: number) {
         return this.createQueryBuilder('user')
             .leftJoinAndSelect('user.perfumes', 'perfumes')
             .where('user.id = ?', [id])
             .execute('get');
+    }
+
+    findUserByIdAndThirtyDays(id: number) {
+        const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
+        return this.findOne({ id, deletedAt: { $gt: thirtyDaysAgo }, isDeleted: true }, { filters: false });
     }
 }
