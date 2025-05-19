@@ -43,4 +43,8 @@ export class UserRepository extends EntityRepository<User> {
 
         return this.findOne({ id, deletedAt: { $gt: thirtyDaysAgo }, isDeleted: true }, { filters: false });
     }
+
+    findUserByIdWithDeletedUser(id: number) {
+        return this.findOne({ id }, { filters: false });
+    }
 }

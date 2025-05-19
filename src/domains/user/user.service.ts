@@ -77,6 +77,14 @@ export class UserService implements UserServiceInterface {
         await this.repository.update(user);
     }
 
+    async getUserByIdWithDeletedUser(id: number) {
+        const user = await this.repository.findUserByIdWithDeletedUser(id);
+
+        if (!user) throw new CustomException(NOT_FOUND.USER);
+
+        return plainToInstance(User, <User>user);
+    }
+
     private async hashPassword(password: string): Promise<string> {
         return await bcrypt.hash(password, SALT_ROUNDS);
     }
