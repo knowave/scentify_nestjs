@@ -95,6 +95,10 @@ export class UserService implements UserServiceInterface {
 
     async getUserByEmailWithPassword(email: string) {
         const user = await this.repository.findUserByEmailWithPassword(email);
+
+        if (!user) return null;
+
+        return plainToInstance(User, <User>user);
     }
 
     private async hashPassword(password: string): Promise<string> {
