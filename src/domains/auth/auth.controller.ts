@@ -4,6 +4,8 @@ import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LoginBodyDto } from './dto/request/login.req';
 import { LoginResDto } from './dto/response/login.res';
 import { Public } from 'src/common/decorators/public.decorator';
+import { CurrentUser } from 'src/common/decorators/user.decorator';
+import { CurrentUserType } from 'src/common/types/current-user.type';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -17,5 +19,11 @@ export class AuthController {
     @Post('/login')
     async login(@Body() body: LoginBodyDto) {
         return this.service.login(body);
+    }
+
+    @ApiOperation({ summary: '로그아웃' })
+    @Post('/logout')
+    async logout(@CurrentUser() { id }: CurrentUserType) {
+        return this.service.logout(id);
     }
 }

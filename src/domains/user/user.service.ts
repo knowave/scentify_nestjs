@@ -112,4 +112,8 @@ export class UserService implements UserServiceInterface {
     private async hashPassword(password: string): Promise<string> {
         return await bcrypt.hash(password, SALT_ROUNDS);
     }
+
+    async updateUserForToken(updateUser: User) {
+        await this.repository.update(updateUser);
+    }
 }

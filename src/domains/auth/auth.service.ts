@@ -43,7 +43,16 @@ export class AuthService {
         const accessToken = await this.generateAccessToken(user);
         const refreshToken = await this.generateRefreshToken(user);
 
+        user.token = refreshToken;
+        await this.userService.updateUserForToken(user);
+
         return plainToInstance(LoginResDto, <LoginResDto>{ accessToken, refreshToken });
+    }
+
+    async logout(id: number) {
+        const user = await this.userService.getUserById(id);
+        user.token = null;
+        await this.userService.updateUserForToken(user);
     }
 
     private async generateAccessToken(user: User) {
