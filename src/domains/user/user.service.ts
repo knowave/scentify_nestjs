@@ -93,6 +93,10 @@ export class UserService implements UserServiceInterface {
         return plainToInstance(User, <User>user);
     }
 
+    async getUserByEmailWithPassword(email: string) {
+        const user = await this.repository.findUserByEmailWithPassword(email);
+    }
+
     private async hashPassword(password: string): Promise<string> {
         return await bcrypt.hash(password, SALT_ROUNDS);
     }

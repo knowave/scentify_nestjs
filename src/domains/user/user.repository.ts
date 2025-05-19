@@ -52,4 +52,8 @@ export class UserRepository extends EntityRepository<User> {
     findUserByKakaoIdWithDeletedUser(kakaoId: string) {
         return this.findOne({ socialId: kakaoId, socialLoginType: SocialLoginEnum.KAKAO }, { filters: false });
     }
+
+    findUserByEmailWithPassword(email: string) {
+        return this.findOne({ email }, { fields: ['*', 'password'] });
+    }
 }
