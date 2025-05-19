@@ -85,6 +85,14 @@ export class UserService implements UserServiceInterface {
         return plainToInstance(User, <User>user);
     }
 
+    async getUserByKakaoId(kakaoId: string) {
+        const user = await this.repository.findUserByKakaoIdWithDeletedUser(kakaoId);
+
+        if (!user) return null;
+
+        return plainToInstance(User, <User>user);
+    }
+
     private async hashPassword(password: string): Promise<string> {
         return await bcrypt.hash(password, SALT_ROUNDS);
     }

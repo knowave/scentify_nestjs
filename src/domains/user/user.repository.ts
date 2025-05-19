@@ -2,6 +2,7 @@ import { EntityManager, EntityRepository } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { SaveUserType } from './types/save.type';
+import { SocialLoginEnum } from 'src/common/enum/social-login.enum';
 
 @Injectable()
 export class UserRepository extends EntityRepository<User> {
@@ -46,5 +47,9 @@ export class UserRepository extends EntityRepository<User> {
 
     findUserByIdWithDeletedUser(id: number) {
         return this.findOne({ id }, { filters: false });
+    }
+
+    findUserByKakaoIdWithDeletedUser(kakaoId: string) {
+        return this.findOne({ socialId: kakaoId, socialLoginType: SocialLoginEnum.KAKAO }, { filters: false });
     }
 }
