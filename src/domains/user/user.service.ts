@@ -101,6 +101,14 @@ export class UserService implements UserServiceInterface {
         return plainToInstance(User, <User>user);
     }
 
+    async getUserByNaverId(naverId: string) {
+        const user = await this.repository.findUserByNaverIdWithDeletedUser(naverId);
+
+        if (!user) return null;
+
+        return plainToInstance(User, <User>user);
+    }
+
     private async hashPassword(password: string): Promise<string> {
         return await bcrypt.hash(password, SALT_ROUNDS);
     }

@@ -56,4 +56,8 @@ export class UserRepository extends EntityRepository<User> {
     findUserByEmailWithPassword(email: string) {
         return this.findOne({ email }, { fields: ['*', 'password'] });
     }
+
+    findUserByNaverIdWithDeletedUser(naverId: string) {
+        return this.findOne({ socialId: naverId, socialLoginType: SocialLoginEnum.NAVER }, { filters: false });
+    }
 }
